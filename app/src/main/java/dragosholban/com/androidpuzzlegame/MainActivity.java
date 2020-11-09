@@ -45,29 +45,6 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 3;
     static final int REQUEST_IMAGE_GALLERY = 4;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        AssetManager am = getAssets();
-        try {
-            final String[] files  = am.list("img");
-
-            GridView grid = findViewById(R.id.grid);
-            grid.setAdapter(new ImageAdapter(this));
-            grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Intent intent = new Intent(getApplicationContext(), PuzzleActivity.class);
-                    intent.putExtra("assetName", files[i % files.length]);
-                    startActivity(intent);
-                }
-            });
-        } catch (IOException e) {
-            Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT);
-        }
-    }
 
     public void onImageFromCameraClick(View view) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -86,7 +63,29 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
+        AssetManager am = getAssets();
+        try {
+            final String[] files = am.list("img");
+
+            GridView grid = findViewById(R.id.grid);
+            grid.setAdapter(new ImageAdapter(this));
+            grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent intent = new Intent(getApplicationContext(), PuzzleActivity.class);
+                    intent.putExtra("assetName", files[i % files.length]);
+                    startActivity(intent);
+                }
+            });
+        } catch (IOException e) {
+            Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT);
+        }
+    }
     private File createImageFile() throws IOException {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // permission not granted, initiate request
@@ -138,9 +137,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     public void onImageFromGalleryClick(View view) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
         } else {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
@@ -148,3 +148,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
